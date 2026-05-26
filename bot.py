@@ -1,7 +1,6 @@
 import os
 import asyncio
 from pyrogram import Client, filters
-from pyrogram.idle import idle
 
 api_id = int(os.environ["API_ID"])
 api_hash = os.environ["API_HASH"]
@@ -43,8 +42,7 @@ async def main():
 
     asyncio.create_task(worker())
 
-    await idle()
+    while True:
+        await asyncio.sleep(600)
 
-    await app.stop()
-
-asyncio.get_event_loop().run_until_complete(main())
+asyncio.run(main())
