@@ -2,23 +2,18 @@ import asyncio
 from pyrogram import Client, filters
 import os
 
-# ─── CONFIG ─────────────────────────────────────────────────────
-
-API_ID = int(os.environ.get("API_ID", "0"))
-API_HASH = os.environ.get("API_HASH", "")
-SESSION = os.environ.get("SESSION_STRING", "")
+API_ID = int(os.environ["API_ID"])
+API_HASH = os.environ["API_HASH"]
+SESSION = os.environ["SESSION_STRING"]
 
 SOURCE_CHATS = [
     int(x.strip())
-    for x in os.environ.get("SOURCE_CHATS", "").split(",")
-    if x.strip()
+    for x in os.environ["SOURCE_CHATS"].split(",")
 ]
 
-DEST_CHAT = int(os.environ.get("DEST_CHAT", "0"))
+DEST_CHAT = int(os.environ["DEST_CHAT"])
 
 DELAY_SECONDS = 5
-
-# ────────────────────────────────────────────────────────────────
 
 app = Client(
     "forwarder",
@@ -27,24 +22,21 @@ app = Client(
     session_string=SESSION
 )
 
-
 @app.on_message(filters.channel & filters.chat(SOURCE_CHATS))
 async def forward_message(client, message):
 
-    print(f"📥 New message detected: {message.id}")
+    print(f"📥 New message: {message.id}")
 
     await asyncio.sleep(DELAY_SECONDS)
 
     try:
-        # COPY instead of FORWARD
         await message.copy(DEST_CHAT)
 
-        print(f"✅ Copied msg {message.id}")
+        print(f"✅ Copied: {message.id}")
 
     except Exception as e:
         print(f"❌ Error: {e}")
 
+print("🚀 Heroku forwarder running...")
 
-if __name__ == "__main__":
-    print("🚀 Heroku forwarder running...")
-    app.run()
+app.run()
